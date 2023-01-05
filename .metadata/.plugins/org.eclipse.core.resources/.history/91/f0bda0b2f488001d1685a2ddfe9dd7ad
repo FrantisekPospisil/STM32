@@ -1,0 +1,346 @@
+/* USER CODE BEGIN Header */
+/**
+  ******************************************************************************
+  * @file    stm32f0xx_it.c
+  * @brief   Interrupt Service Routines.
+  ******************************************************************************
+  * @attention
+  *
+  * Copyright (c) 2022 STMicroelectronics.
+  * All rights reserved.
+  *
+  * This software is licensed under terms that can be found in the LICENSE file
+  * in the root directory of this software component.
+  * If no LICENSE file comes with this software, it is provided AS-IS.
+  *
+  ******************************************************************************
+  */
+/* USER CODE END Header */
+
+/* Includes ------------------------------------------------------------------*/
+#include "main.h"
+#include "stm32f0xx_it.h"
+/* Private includes ----------------------------------------------------------*/
+/* USER CODE BEGIN Includes */
+/* USER CODE END Includes */
+
+/* Private typedef -----------------------------------------------------------*/
+/* USER CODE BEGIN TD */
+
+/* USER CODE END TD */
+
+/* Private define ------------------------------------------------------------*/
+/* USER CODE BEGIN PD */
+
+/* USER CODE END PD */
+
+/* Private macro -------------------------------------------------------------*/
+/* USER CODE BEGIN PM */
+
+/* USER CODE END PM */
+
+/* Private variables ---------------------------------------------------------*/
+/* USER CODE BEGIN PV */
+
+/* USER CODE END PV */
+
+/* Private function prototypes -----------------------------------------------*/
+/* USER CODE BEGIN PFP */
+
+/* USER CODE END PFP */
+
+/* Private user code ---------------------------------------------------------*/
+/* USER CODE BEGIN 0 */
+
+/* USER CODE END 0 */
+
+/* External variables --------------------------------------------------------*/
+
+/* USER CODE BEGIN EV */
+
+/* USER CODE END EV */
+
+/******************************************************************************/
+/*           Cortex-M0 Processor Interruption and Exception Handlers          */
+/******************************************************************************/
+/**
+  * @brief This function handles Non maskable interrupt.
+  */
+void NMI_Handler(void)
+{
+  /* USER CODE BEGIN NonMaskableInt_IRQn 0 */
+
+  /* USER CODE END NonMaskableInt_IRQn 0 */
+  /* USER CODE BEGIN NonMaskableInt_IRQn 1 */
+  while (1)
+  {
+  }
+  /* USER CODE END NonMaskableInt_IRQn 1 */
+}
+
+/**
+  * @brief This function handles Hard fault interrupt.
+  */
+void HardFault_Handler(void)
+{
+  /* USER CODE BEGIN HardFault_IRQn 0 */
+
+  /* USER CODE END HardFault_IRQn 0 */
+  while (1)
+  {
+    /* USER CODE BEGIN W1_HardFault_IRQn 0 */
+    /* USER CODE END W1_HardFault_IRQn 0 */
+  }
+}
+
+/**
+  * @brief This function handles System service call via SWI instruction.
+  */
+void SVC_Handler(void)
+{
+  /* USER CODE BEGIN SVC_IRQn 0 */
+
+  /* USER CODE END SVC_IRQn 0 */
+  /* USER CODE BEGIN SVC_IRQn 1 */
+
+  /* USER CODE END SVC_IRQn 1 */
+}
+
+/**
+  * @brief This function handles Pendable request for system service.
+  */
+void PendSV_Handler(void)
+{
+  /* USER CODE BEGIN PendSV_IRQn 0 */
+
+  /* USER CODE END PendSV_IRQn 0 */
+  /* USER CODE BEGIN PendSV_IRQn 1 */
+
+  /* USER CODE END PendSV_IRQn 1 */
+}
+
+/**
+  * @brief This function handles System tick timer.
+  */
+void SysTick_Handler(void)
+{
+  /* USER CODE BEGIN SysTick_IRQn 0 */
+	TimeOutI2C++;							// pocita milisekundy pro vysilani na I2C
+	if(TimerStart<1000) TimerStart++;		// pocita milisekundy od startu
+	if(TimerBeep>0) {						// pocita milisekundy kdy ma bezet PWM pro piezomenic
+		TimerBeep--;
+		if(TimerBeep==0) {
+			LL_TIM_DisableAllOutputs(TIM2);
+			LL_TIM_DisableCounter(TIM2);
+		}
+	}
+
+	if(TimerSpi>0) TimerSpi++;
+	if(TimerSpi>200) TimerSpi = 0;
+	if(TimerSpi==10) {
+		Rozdil = TempSet - TempMeasure;
+		if(Rozdil>200) {
+			SolderPWM = 1000;
+	//		Beep(500, 5);
+		}
+		if((Rozdil<200) && (Rozdil>100)) SolderPWM = 200;
+		if(Rozdil<-100) SolderPWM = 0;
+		if((Rozdil<100) && (Rozdil>0) && (SolderPWM<990)) SolderPWM += 10;
+		if((Rozdil>-100) && (Rozdil<0) && (SolderPWM>9)) SolderPWM -= 10;
+		LL_TIM_OC_SetCompareCH2(TIM1, SolderPWM);
+	}
+  /* USER CODE END SysTick_IRQn 0 */
+  HAL_IncTick();
+  /* USER CODE BEGIN SysTick_IRQn 1 */
+
+  /* USER CODE END SysTick_IRQn 1 */
+}
+
+/******************************************************************************/
+/* STM32F0xx Peripheral Interrupt Handlers                                    */
+/* Add here the Interrupt Handlers for the used peripherals.                  */
+/* For the available peripheral interrupt handler names,                      */
+/* please refer to the startup file (startup_stm32f0xx.s).                    */
+/******************************************************************************/
+
+/**
+  * @brief This function handles EXTI line 4 to 15 interrupts.
+  */
+void EXTI4_15_IRQHandler(void)
+{
+  /* USER CODE BEGIN EXTI4_15_IRQn 0 */
+
+  /* USER CODE END EXTI4_15_IRQn 0 */
+  if (LL_EXTI_IsActiveFlag_0_31(LL_EXTI_LINE_5) != RESET)
+  {
+    LL_EXTI_ClearFlag_0_31(LL_EXTI_LINE_5);
+    /* USER CODE BEGIN LL_EXTI_LINE_5 */
+    // preruseni tlacitka rotacniho koderu
+    if(TimerStart==1000) {
+    	switch(System) {
+    		case 0: {
+    			System = 1;
+    			break;
+    		}
+    		case 1: {
+    			if(Menu==13) System = 0;
+    			else System = 2;
+    			break;
+    		}
+    		case 2: {
+    			System = 1;
+    			break;
+    		}
+    	}
+    	Beep( 2000, 10 );
+    }
+    /* USER CODE END LL_EXTI_LINE_5 */
+  }
+  if (LL_EXTI_IsActiveFlag_0_31(LL_EXTI_LINE_6) != RESET)
+  {
+    LL_EXTI_ClearFlag_0_31(LL_EXTI_LINE_6);
+    /* USER CODE BEGIN LL_EXTI_LINE_6 */
+    // preruseni pinu rotacniho koderu
+    if (!LL_GPIO_IsInputPinSet(Encoder_1_GPIO_Port, Encoder_1_Pin)) {
+    	switch(System) {
+    		case 0: {
+    			if (TempSet < TempMax) TempSet += 10;
+    			break;
+    		}
+    		case 1: {
+    			if (Menu < 13) Menu++;
+    			else Menu = 0;
+    			break;
+    		}
+    		case 2: {
+    			switch(Menu) {
+    				case 0: {
+    					if (TempMin < 4000) TempMin++;
+    					break;
+    				}
+    				case 1: {
+    					if (TempMax < 4000) TempMax++;
+    					break;
+    				}
+    				case 2: {
+    					if (TempSet0 < 4000) TempSet0++;
+    					break;
+    				}
+    				case 3: {
+    					if (StandbyTemp < 4000) StandbyTemp++;
+    					break;
+    				}
+    				case 4: {
+    					if (StandbyDifference < 500) StandbyDifference++;
+    					break;
+    				}
+    				case 5: {
+    					if (StandbyTimerMax < 500) StandbyTimerMax++;
+    					break;
+    				}
+    				case 6: {
+    					if (MeanMax < 100) MeanMax++;
+    					break;
+    				}
+    				case 7: {
+    					if (Const1 < 5000) Const1++;
+    					break;
+    				}
+    				case 8: {
+    					if (Const2 < 5000) Const2++;
+    				    break;
+    				}
+    				case 9: {
+    				    if (Const3 < 5000) Const3++;
+    				    break;
+    				}
+    				case 10: {
+    					if (Const4 < 5000) Const4++;
+    				    break;
+    				}
+    				case 11: {
+    				    if (Const5 < 5000) Const5++;
+    				    break;
+    				}
+    			}
+    			break;
+    		}
+    	}
+    }
+    else {
+    	switch(System) {
+    		case 0: {
+    			if (TempSet > TempMin) TempSet -= 10;
+    			break;
+    		}
+    		case 1: {
+    			if (Menu > 0) Menu--;
+    			else Menu = 12;
+    			break;
+    		}
+    		case 2: {
+    			switch(Menu) {
+    				case 0: {
+    					if (TempMin > 400) TempMin--;
+    					break;
+    				}
+    				case 1: {
+    					if (TempMax > 1000) TempMax--;
+    					break;
+    				}
+    				case 2: {
+    					if (TempSet0 > 400) TempSet0--;
+    					break;
+    				}
+    				case 3: {
+    					if (StandbyTemp > 200) StandbyTemp--;
+    					break;
+    				}
+    				case 4: {
+    					if (StandbyDifference > 0) StandbyDifference--;
+    					break;
+    				}
+    				case 5: {
+    					if (StandbyTimerMax > 10) StandbyTimerMax--;
+    					break;
+    				}
+    				case 6: {
+    					if (MeanMax > 4) MeanMax--;
+    					break;
+    				}
+    				case 7: {
+    					if (Const1 > 0) Const1--;
+    					break;
+    				}
+    				case 8: {
+    					if (Const2 > 0) Const2--;
+    					break;
+    				}
+    				case 9: {
+    					if (Const3 > 0) Const3--;
+    					break;
+    				}
+    				case 10: {
+    					if (Const4 > 0) Const4--;
+    					break;
+    				}
+    				case 11: {
+    					if (Const5 > 0) Const5--;
+    					break;
+    				}
+    			}
+    			break;
+    		}
+    	}
+    }
+    Beep( 2000, 10 );
+    /* USER CODE END LL_EXTI_LINE_6 */
+  }
+  /* USER CODE BEGIN EXTI4_15_IRQn 1 */
+
+  /* USER CODE END EXTI4_15_IRQn 1 */
+}
+
+/* USER CODE BEGIN 1 */
+
+/* USER CODE END 1 */

@@ -1,0 +1,460 @@
+/* USER CODE BEGIN Header */
+/**
+  ******************************************************************************
+  * @file           : main.c
+  * @brief          : Main program body
+  ******************************************************************************
+  * @attention
+  *
+  * Copyright (c) 2022 STMicroelectronics.
+  * All rights reserved.
+  *
+  * This software is licensed under terms that can be found in the LICENSE file
+  * in the root directory of this software component.
+  * If no LICENSE file comes with this software, it is provided AS-IS.
+  *
+  ******************************************************************************
+  */
+/* USER CODE END Header */
+/* Includes ------------------------------------------------------------------*/
+#include "main.h"
+#include "adc.h"
+#include "spi.h"
+#include "tim.h"
+#include "gpio.h"
+
+/* Private includes ----------------------------------------------------------*/
+/* USER CODE BEGIN Includes */
+#include "HD44780.h"
+#include "Eeprom.h"
+/* USER CODE END Includes */
+
+/* Private typedef -----------------------------------------------------------*/
+/* USER CODE BEGIN PTD */
+
+/* USER CODE END PTD */
+
+/* Private define ------------------------------------------------------------*/
+/* USER CODE BEGIN PD */
+/* USER CODE END PD */
+
+/* Private macro -------------------------------------------------------------*/
+/* USER CODE BEGIN PM */
+
+/* USER CODE END PM */
+
+/* Private variables ---------------------------------------------------------*/
+
+/* USER CODE BEGIN PV */
+
+uint16_t	TimerBeep			= 0;
+uint8_t		System				= 0;
+uint8_t		Menu				= 0;
+uint32_t	TempMeasure			= 0;
+uint32_t	TempMeasure0		= 0;
+uint32_t	AdResult			= 0;				// 1. v poradi
+uint16_t	TempMin				= 100;
+uint16_t	TempMax				= 200;
+uint16_t	TempSet0			= 180;
+uint16_t	StandbyTemp			= 110;
+uint16_t	StandbyDifference	= 160;
+uint16_t	StandbyTimerMax		= 250;
+uint16_t	MeanMax				= 200;
+uint16_t	Const1				= 101;
+uint16_t	Const2				= 201;
+uint16_t	Const3				= 301;
+uint16_t	Const4				= 401;
+uint16_t	Const5				= 501;
+uint16_t	TempSet				= 180;
+uint16_t	PowerPWM			= 0;
+uint16_t	TimerStart			= 0;
+uint8_t		EepromBuffer[30];
+uint8_t		Thermo[4];
+uint32_t	ThermoIn			= 0;
+uint32_t	ThermoOut			= 0;
+uint16_t	SolderPWM			= 0;
+int16_t		Rozdil				= 0;
+
+
+
+/* USER CODE END PV */
+
+/* Private function prototypes -----------------------------------------------*/
+void SystemClock_Config(void);
+/* USER CODE BEGIN PFP */
+
+/* USER CODE END PFP */
+
+/* Private user code ---------------------------------------------------------*/
+/* USER CODE BEGIN 0 */
+
+/* USER CODE END 0 */
+
+/**
+  * @brief  The application entry point.
+  * @retval int
+  */
+int main(void)
+{
+  /* USER CODE BEGIN 1 */
+
+  /* USER CODE END 1 */
+
+  /* MCU Configuration--------------------------------------------------------*/
+
+  /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
+  HAL_Init();
+
+  /* USER CODE BEGIN Init */
+
+  /* USER CODE END Init */
+
+  /* Configure the system clock */
+  SystemClock_Config();
+
+  /* USER CODE BEGIN SysInit */
+
+  /* USER CODE END SysInit */
+
+  /* Initialize all configured peripherals */
+  MX_GPIO_Init();
+  MX_ADC_Init();
+  MX_SPI1_Init();
+  MX_SPI2_Init();
+  MX_TIM1_Init();
+  MX_TIM2_Init();
+  /* USER CODE BEGIN 2 */
+  LL_mDelay( 250 );
+
+  LL_SYSTICK_EnableIT();							// aktivuje preruseni po 1ms
+  LL_ADC_Enable(ADC1);
+  LL_ADC_REG_StartConversion(ADC1);
+  EEPROM_SPI_INIT(&hspi2);
+  EEPROM_SPI_ReadBuffer(EepromBuffer, (uint16_t)0x10, (uint16_t)26 );
+
+  if((EepromBuffer[24] == 0xA5) && (EepromBuffer[25] == 0x69)){
+	  TempMin = (EepromBuffer[ 0] << 8) + EepromBuffer[ 1];
+	  TempMax = (EepromBuffer[ 2] << 8) + EepromBuffer[ 3];
+	  TempSet0 = (EepromBuffer[ 4] << 8) + EepromBuffer[ 5];
+	  StandbyTemp = (EepromBuffer[ 6] << 8) + EepromBuffer[ 7];
+	  StandbyDifference = (EepromBuffer[ 8] << 8) + EepromBuffer[ 9];
+	  StandbyTimerMax = (EepromBuffer[10] << 8) + EepromBuffer[11];
+	  MeanMax = (EepromBuffer[12] << 8) + EepromBuffer[13];
+	  Const1 = (EepromBuffer[14] << 8) + EepromBuffer[15];
+	  Const2 = (EepromBuffer[16] << 8) + EepromBuffer[17];
+	  Const3 = (EepromBuffer[18] << 8) + EepromBuffer[19];
+	  Const4 = (EepromBuffer[20] << 8) + EepromBuffer[21];
+	  Const5 = (EepromBuffer[22] << 8) + EepromBuffer[23];
+	  TempSet = TempSet0;
+  }
+
+  Beep( 1000, 200 );
+  LL_mDelay( 250 );
+  LL_GPIO_SetOutputPin(LCD_LED_GPIO_Port, LCD_LED_Pin);		// zapne podsviceni
+  LL_GPIO_SetOutputPin(SPI1_NSS_GPIO_Port, SPI1_NSS_Pin);	// CS obvodu mereni teploty
+  LL_GPIO_SetOutputPin(SPI2_NSS_GPIO_Port, SPI2_NSS_Pin);	// CS obvodu EEPROM
+  LL_TIM_EnableCounter(TIM1);								// PWM pajky
+  LL_TIM_EnableAllOutputs(TIM1);
+  LCD_Init();
+  LCD_Position( 0, 0 );
+  LCD_WriteCString( " 03_Soldering   " );
+  LCD_Position( 1, 0 );
+  LCD_WriteCString( " 30.12.2022     " );
+  Beep( 1500, 200 );
+  LL_mDelay( 250 );
+  Beep( 2000, 200 );
+  LL_mDelay( 250 );
+  Beep( 800, 200 );
+  LL_mDelay( 250 );
+  Beep( 2200, 400 );
+  LL_mDelay( 1000 );
+  LCD_Clear();
+  /* USER CODE END 2 */
+
+  /* Infinite loop */
+  /* USER CODE BEGIN WHILE */
+  while (1) {
+	  HAL_GPIO_WritePin(SPI1_NSS_GPIO_Port, SPI1_NSS_Pin, GPIO_PIN_RESET);
+	  HAL_SPI_Receive(&hspi1, Thermo, 4, 1000);
+	  HAL_GPIO_WritePin(SPI1_NSS_GPIO_Port, SPI1_NSS_Pin, GPIO_PIN_SET);
+	  ThermoIn = (Thermo[3] >> 4) | (Thermo[2] << 4);
+	  ThermoIn = ThermoIn * 625 / 1000;
+	  ThermoOut = (Thermo[1] >> 2) | (Thermo[0] << 6);
+	  ThermoOut &= 0x03FFF;
+	  TempMeasure = ThermoOut * 25 / 10;
+
+	  AdResult = LL_ADC_REG_ReadConversionData12(ADC1);		// zmeri napajeci napeti
+	  AdResult = ( AdResult * 303 ) >> 14;					// y = 0.0185 x
+	  if((AdResult < 20) && (TimerStart > 5000)) {			// low voltage, it will shut down
+		  LL_TIM_DisableCounter(TIM1);								// stops PWM heating
+		  LL_ADC_Disable(ADC1);
+		  LL_GPIO_ResetOutputPin(LCD_LED_GPIO_Port, LCD_LED_Pin);	// turns off the backlight
+		  LCD_Position( 0, 0 );
+		  LCD_WriteCString( "Low voltage, it " );
+		  LCD_Position( 1, 0 );
+		  LCD_WriteCString( "will shut down  " );
+		  Beep( 4186, 50 );
+		  LL_mDelay( 100 );
+		  Beep( 2093, 50 );
+		  LL_mDelay( 100 );
+		  Beep( 1046, 50 );
+		  LL_mDelay( 100 );
+		  Beep( 523, 50 );
+		  LL_mDelay( 100 );
+		  LL_SYSTICK_DisableIT();							// stops SYSTICK
+		  while (1) {}										// vypinani je dokonceno
+	  }
+
+	  switch(System & 0x0F) {
+	  case 0: {
+		  LCD_Position( 0, 0 );								// normalni zobrazeni
+		  LCD_PrTemp( ThermoIn );
+		  LCD_WriteCString( "  " );
+		  LCD_Position( 0, 8 );
+		  LCD_PrTemp( TempMeasure );
+		  LCD_WriteCString( " " );
+		  LCD_Position( 1, 0 );
+		  LCD_PrTemp( TempSet );
+		  LCD_WriteCString( "   " );
+		  LCD_PrintNumber(SolderPWM / 10, 3, 0);
+		  LCD_WriteCString( "% " );							// konec normalniho zobrazeni
+		  break;
+	  }
+	  case 1: {
+		  LCD_Position( 0, 0 );								// zobrazeni MENU
+		  switch(Menu) {
+		  case 0: {
+			  LCD_WriteCString( "1 Teplota Tmin  " );
+	  		  LCD_Position( 1, 0 );
+	  		  LCD_PrTemp( TempMin );
+	  		  LCD_WriteCString( "      " );
+	  		  break;
+		  }
+		  case 1: {
+			  LCD_WriteCString( "2 Teplota Tmax  " );
+			  LCD_Position( 1, 0 );
+			  LCD_PrTemp( TempMax );
+			  LCD_WriteCString( "      " );
+			  break;
+		  }
+		  case 2: {
+			  LCD_WriteCString( "3 Teplota Tset  " );
+			  LCD_Position( 1, 0 );
+			  LCD_PrTemp( TempSet0 );
+			  LCD_WriteCString( "      " );
+			  break;
+		  }
+		  case 3: {
+	  		  LCD_WriteCString( "4 Teplota Standb" );
+	  		  LCD_Position( 1, 0 );
+	  		  LCD_PrTemp( StandbyTemp );
+	  		  LCD_WriteCString( "      " );
+	  		  break;
+		  }
+		  case 4: {
+			  LCD_WriteCString( "5 Standby Diff  " );
+			  LCD_Position( 1, 0 );
+			  LCD_PrPwm( StandbyDifference );
+			  LCD_WriteCString( "       " );
+			  break;
+		  }
+		  case 5: {
+			  LCD_WriteCString( "6 Standby timer " );
+			  LCD_Position( 1, 0 );
+			  LCD_PrintNumber( StandbyTimerMax, 4, 0 );
+			  LCD_WriteCString( "        " );
+			  break;
+		  }
+		  case 6: {
+			  LCD_WriteCString( "7 Velikost pole " );
+			  LCD_Position( 1, 0 );
+			  LCD_PrintNumber( MeanMax, 4, 0 );
+			  LCD_WriteCString( "           " );
+			  break;
+		  }
+		  case 7: {
+	  		  LCD_WriteCString( "8 Proporcionalni" );
+	  		  LCD_Position( 1, 0 );
+	  		  LCD_PrintNumber( Const1, 4, 0 );
+	  		  LCD_WriteCString( "           " );
+	  		  break;
+		  }
+		  case 8: {
+	  		  LCD_WriteCString( "9 Integralni    " );
+	  		  LCD_Position( 1, 0 );
+	  		  LCD_PrintNumber( Const2, 4, 0 );
+	  		  LCD_WriteCString( "           " );
+	  		  break;
+		  }
+		  case 9: {
+	  		  LCD_WriteCString( "10 Primka 1     " );
+	  		  LCD_Position( 1, 0 );
+	  		  LCD_PrintNumber( Const3, 4, 0 );
+	  		  LCD_WriteCString( "           " );
+	  		  break;
+		  }
+		  case 10: {
+	  		  LCD_WriteCString( "11 Primka 2     " );
+	  		  LCD_Position( 1, 0 );
+	  		  LCD_PrintNumber( Const4, 4, 0 );
+	  		  LCD_WriteCString( "           " );
+	  		  break;
+		  }
+		  case 11: {
+	  		  LCD_WriteCString( "12 Primka 3     " );
+	  		  LCD_Position( 1, 0 );
+	  		  LCD_PrintNumber( Const5, 4, 0 );
+	  		  LCD_WriteCString( "           " );
+	  		  break;
+		  }
+		  case 12: {
+	  		  LCD_WriteCString( "Napajeci napeti:" );
+	  		  LCD_Position( 1, 0 );
+	  		  LCD_PrintNumber( AdResult, 2, 0);
+	  		  LCD_WriteCString( " Voltu - - - " );
+	  		  break;
+		  }
+		  case 13: {
+	  		  LCD_WriteCString( "Exit menu       " );
+	  		  LCD_Position( 1, 0 );
+	  		  LCD_WriteCString( "                " );
+	  		  break;
+		  }
+		  }
+		  if (System == 0x11) {
+			  LCD_WriteCString( "^" );
+		  } else {
+			  LCD_WriteCString( " " );
+		  }
+		  break;
+
+	  }
+	  case 2: {
+		  LCD_Position( 0, 0 );
+		  LCD_WriteCString( "     E X I T    " );
+		  LCD_Position( 1, 0 );
+		  LCD_WriteCString( "     M E N U    " );
+		  LL_mDelay( 1000 );
+		  LCD_Position( 0, 0 );
+		  LCD_WriteCString( "                " );
+		  LCD_Position( 1, 0 );
+		  LCD_WriteCString( "                " );
+		  System = 0;
+
+		  EepromBuffer[ 0] = (uint8_t) TempMin >> 8;
+		  EepromBuffer[ 1] = (uint8_t) TempMin;
+		  EepromBuffer[ 2] = (uint8_t) TempMax >> 8;
+		  EepromBuffer[ 3] = (uint8_t) TempMax;
+		  EepromBuffer[ 4] = (uint8_t) TempSet0 >> 8;
+		  EepromBuffer[ 5] = (uint8_t) TempSet0;
+		  EepromBuffer[ 6] = (uint8_t) StandbyTemp >> 8;
+		  EepromBuffer[ 7] = (uint8_t) StandbyTemp;
+		  EepromBuffer[ 8] = (uint8_t) StandbyDifference >> 8;
+		  EepromBuffer[ 9] = (uint8_t) StandbyDifference;
+		  EepromBuffer[10] = (uint8_t) StandbyTimerMax >> 8;
+		  EepromBuffer[11] = (uint8_t) StandbyTimerMax;
+		  EepromBuffer[12] = (uint8_t) MeanMax >> 8;
+		  EepromBuffer[13] = (uint8_t) MeanMax;
+		  EepromBuffer[14] = (uint8_t) Const1 >> 8;
+		  EepromBuffer[15] = (uint8_t) Const1;
+		  EepromBuffer[16] = (uint8_t) Const2 >> 8;
+		  EepromBuffer[17] = (uint8_t) Const2;
+		  EepromBuffer[18] = (uint8_t) Const3 >> 8;
+		  EepromBuffer[19] = (uint8_t) Const3;
+		  EepromBuffer[20] = (uint8_t) Const4 >> 8;
+		  EepromBuffer[21] = (uint8_t) Const4;
+		  EepromBuffer[22] = (uint8_t) Const5 >> 8;
+		  EepromBuffer[23] = (uint8_t) Const5;
+		  EepromBuffer[24] = 0xA5;
+		  EepromBuffer[25] = 0x69;
+
+		  EEPROM_SPI_INIT(&hspi2);
+		  EEPROM_SPI_WriteBuffer(EepromBuffer, (uint16_t)0x10, (uint16_t)26 );
+
+		  break;
+	  }
+	  }
+    /* USER CODE END WHILE */
+
+    /* USER CODE BEGIN 3 */
+  }
+  /* USER CODE END 3 */
+}
+
+/**
+  * @brief System Clock Configuration
+  * @retval None
+  */
+void SystemClock_Config(void)
+{
+  LL_FLASH_SetLatency(LL_FLASH_LATENCY_1);
+  while(LL_FLASH_GetLatency() != LL_FLASH_LATENCY_1)
+  {
+  }
+  LL_RCC_HSI48_Enable();
+
+   /* Wait till HSI48 is ready */
+  while(LL_RCC_HSI48_IsReady() != 1)
+  {
+
+  }
+  LL_RCC_SetAHBPrescaler(LL_RCC_SYSCLK_DIV_1);
+  LL_RCC_SetAPB1Prescaler(LL_RCC_APB1_DIV_1);
+  LL_RCC_SetSysClkSource(LL_RCC_SYS_CLKSOURCE_HSI48);
+
+   /* Wait till System clock is ready */
+  while(LL_RCC_GetSysClkSource() != LL_RCC_SYS_CLKSOURCE_STATUS_HSI48)
+  {
+
+  }
+  LL_SetSystemCoreClock(48000000);
+
+   /* Update the time base */
+  if (HAL_InitTick (TICK_INT_PRIORITY) != HAL_OK)
+  {
+    Error_Handler();
+  }
+}
+
+/* USER CODE BEGIN 4 */
+void Beep( uint32_t Tone, uint16_t Time) {
+	Tone = 1000000 / Tone;
+	LL_TIM_EnableCounter(TIM2);
+	LL_TIM_EnableAllOutputs(TIM2);
+	LL_TIM_SetAutoReload(TIM2, Tone);
+	LL_TIM_OC_SetCompareCH1(TIM2, 200);
+	TimerBeep = Time;
+}
+/* USER CODE END 4 */
+
+/**
+  * @brief  This function is executed in case of error occurrence.
+  * @retval None
+  */
+void Error_Handler(void)
+{
+  /* USER CODE BEGIN Error_Handler_Debug */
+  /* User can add his own implementation to report the HAL error return state */
+  __disable_irq();
+  while (1)
+  {
+  }
+  /* USER CODE END Error_Handler_Debug */
+}
+
+#ifdef  USE_FULL_ASSERT
+/**
+  * @brief  Reports the name of the source file and the source line number
+  *         where the assert_param error has occurred.
+  * @param  file: pointer to the source file name
+  * @param  line: assert_param error line source number
+  * @retval None
+  */
+void assert_failed(uint8_t *file, uint32_t line)
+{
+  /* USER CODE BEGIN 6 */
+  /* User can add his own implementation to report the file name and line number,
+     ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
+  /* USER CODE END 6 */
+}
+#endif /* USE_FULL_ASSERT */

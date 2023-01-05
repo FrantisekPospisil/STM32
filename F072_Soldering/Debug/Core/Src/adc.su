@@ -1,0 +1,6 @@
+../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_ll_adc.h:1765:22:LL_ADC_SetSamplingTimeCommonChannels	16	static
+../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_ll_adc.h:1947:22:LL_ADC_REG_SetSequencerScanDirection	16	static
+../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_ll_adc.h:2153:22:LL_ADC_REG_SetSequencerChAdd	16	static
+../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_ll_bus.h:227:22:LL_AHB1_GRP1_EnableClock	24	static
+../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_ll_bus.h:665:22:LL_APB1_GRP2_EnableClock	24	static
+../Core/Src/adc.c:28:6:MX_ADC_Init	80	static

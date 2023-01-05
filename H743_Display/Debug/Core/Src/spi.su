@@ -1,0 +1,12 @@
+../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_ll_rcc.h:2898:22:LL_RCC_SetClockSource	24	static
+../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_ll_rcc.h:3276:22:LL_RCC_SetSPIClockSource	16	static
+../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_ll_bus.h:1384:22:LL_AHB4_GRP1_EnableClock	24	static
+../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_ll_bus.h:2480:22:LL_APB2_GRP1_EnableClock	24	static
+../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_ll_spi.h:1116:22:LL_SPI_SetStandard	16	static
+../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_ll_spi.h:1655:22:LL_SPI_EnableNSSPulseMgt	16	static
+../Core/Src/spi.c:31:6:MX_SPI1_Init	72	static
+../Core/Src/spi.c:93:6:MX_SPI2_Init	8	static
+../Core/Src/spi.c:135:6:MX_SPI3_Init	8	static
+../Core/Src/spi.c:177:6:MX_SPI4_Init	72	static
+../Core/Src/spi.c:229:6:HAL_SPI_MspInit	64	static
+../Core/Src/spi.c:306:6:HAL_SPI_MspDeInit	16	static

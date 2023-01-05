@@ -1,0 +1,15 @@
+../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_ll_adc.h:1834:22:LL_ADC_REG_SetTriggerSource	16	static
+../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_ll_adc.h:2770:22:LL_ADC_Disable	16	static
+../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_ll_adc.h:2789:26:LL_ADC_IsEnabled	16	static
+../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_ll_adc.h:2800:26:LL_ADC_IsDisableOngoing	16	static
+../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_ll_adc.h:2897:22:LL_ADC_REG_StopConversion	16	static
+../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_ll_adc.h:2913:26:LL_ADC_REG_IsConversionOngoing	16	static
+../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_ll_adc.h:2924:26:LL_ADC_REG_IsStopConversionOngoing	16	static
+../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_ll_bus.h:778:22:LL_APB1_GRP2_ForceReset	16	static
+../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_ll_bus.h:815:22:LL_APB1_GRP2_ReleaseReset	16	static
+../Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_ll_adc.c:170:13:LL_ADC_CommonDeInit	16	static
+../Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_ll_adc.c:200:13:LL_ADC_DeInit	24	static
+../Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_ll_adc.c:372:13:LL_ADC_Init	24	static
+../Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_ll_adc.c:424:6:LL_ADC_StructInit	16	static
+../Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_ll_adc.c:467:13:LL_ADC_REG_Init	24	static
+../Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_ll_adc.c:529:6:LL_ADC_REG_StructInit	16	static

@@ -1,0 +1,17 @@
+18:58:06 **** Incremental Build of configuration Debug for project F446_DMA_PWM ****
+make -j12 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DSTM32F446xx -DUSE_FULL_LL_DRIVER -DUSE_HAL_DRIVER -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -O0 -ffunction-sections -fdata-sections -Wall -fcommon -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+arm-none-eabi-gcc -o "F446_DMA_PWM.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Dropbox\STM32_workspace\F446_DMA_PWM\STM32F446RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="F446_DMA_PWM.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: F446_DMA_PWM.elf
+ 
+arm-none-eabi-size   F446_DMA_PWM.elf 
+arm-none-eabi-objdump -h -S  F446_DMA_PWM.elf  > "F446_DMA_PWM.list"
+   text	   data	    bss	    dec	    hex	filename
+  13968	    820	   1572	  16360	   3fe8	F446_DMA_PWM.elf
+Finished building: default.size.stdout
+ 
+Finished building: F446_DMA_PWM.list
+ 
+
+18:58:06 Build Finished. 0 errors, 0 warnings. (took 593ms)
+

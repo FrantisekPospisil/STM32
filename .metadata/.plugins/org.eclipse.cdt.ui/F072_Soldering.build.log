@@ -1,0 +1,17 @@
+18:38:53 **** Incremental Build of configuration Debug for project F072_Soldering ****
+make -j12 all 
+arm-none-eabi-gcc "../Core/Src/stm32f0xx_it.c" -mcpu=cortex-m0 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F072xB -DUSE_FULL_LL_DRIVER -c -I../Core/Inc -I../Drivers/STM32F0xx_HAL_Driver/Inc -I../Drivers/STM32F0xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F0xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/stm32f0xx_it.d" -MT"Core/Src/stm32f0xx_it.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/stm32f0xx_it.o"
+arm-none-eabi-gcc -o "F072_Soldering.elf" @"objects.list"   -mcpu=cortex-m0 -T"C:\Dropbox\STM32_workspace\F072_Soldering\STM32F072RBTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="F072_Soldering.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: F072_Soldering.elf
+ 
+arm-none-eabi-size   F072_Soldering.elf 
+arm-none-eabi-objdump -h -S  F072_Soldering.elf  > "F072_Soldering.list"
+   text	   data	    bss	    dec	    hex	filename
+  23972	     40	   2256	  26268	   669c	F072_Soldering.elf
+Finished building: default.size.stdout
+ 
+Finished building: F072_Soldering.list
+ 
+
+18:38:53 Build Finished. 0 errors, 0 warnings. (took 605ms)
+

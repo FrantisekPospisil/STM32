@@ -1,0 +1,22 @@
+/*
+ * Eeprom.c
+ *
+ *  Created on: 17. 11. 2022
+ *      Author: František Pospíšil
+ */
+
+#include "Eeprom.h"
+
+SPI_HandleTypeDef * EEPROM_SPI;
+uint8_t		EEPROM_StatusByte;
+uint8_t		RxBuffer[EEPROM_BUFFER_SIZE] = {0};
+
+/**
+ * @brief Init EEPROM SPI
+ *
+ * @param hspi Pointer to SPI struct handler
+ */
+void EEPROM_SPI_INIT(SPI_HandleTypeDef * hspi) {
+	EEPROM_SPI = hspi;
+}
+

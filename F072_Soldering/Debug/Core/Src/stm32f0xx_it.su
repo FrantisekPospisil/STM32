@@ -1,0 +1,12 @@
+../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_ll_exti.h:891:26:LL_EXTI_IsActiveFlag_0_31	16	static
+../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_ll_exti.h:971:22:LL_EXTI_ClearFlag_0_31	16	static
+../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_ll_tim.h:1093:22:LL_TIM_DisableCounter	16	static
+../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_ll_tim.h:2075:22:LL_TIM_OC_SetCompareCH1	16	static
+../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_ll_tim.h:2965:22:LL_TIM_DisableAllOutputs	16	static
+../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_ll_gpio.h:758:26:LL_GPIO_IsInputPinSet	16	static
+../Core/Src/stm32f0xx_it.c:69:6:NMI_Handler	8	static
+../Core/Src/stm32f0xx_it.c:84:6:HardFault_Handler	8	static
+../Core/Src/stm32f0xx_it.c:99:6:SVC_Handler	8	static
+../Core/Src/stm32f0xx_it.c:112:6:PendSV_Handler	8	static
+../Core/Src/stm32f0xx_it.c:125:6:SysTick_Handler	16	static
+../Core/Src/stm32f0xx_it.c:197:6:EXTI4_15_IRQHandler	8	static

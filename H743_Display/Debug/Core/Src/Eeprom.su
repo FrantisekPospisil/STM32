@@ -1,0 +1,10 @@
+../Core/Src/Eeprom.c:19:6:EEPROM_SPI_INIT	16	static
+../Core/Src/Eeprom.c:23:18:EEPROM_SPI_WritePage	24	static
+../Core/Src/Eeprom.c:62:18:EEPROM_SPI_WriteBuffer	32	static
+../Core/Src/Eeprom.c:149:18:EEPROM_SPI_ReadBuffer	24	static
+../Core/Src/Eeprom.c:174:9:EEPROM_SPI_WaitStandbyState	16	static
+../Core/Src/Eeprom.c:194:9:EEPROM_SendByte	24	static
+../Core/Src/Eeprom.c:212:6:sEE_WriteEnable	16	static
+../Core/Src/Eeprom.c:223:6:sEE_WriteDisable	16	static
+../Core/Src/Eeprom.c:234:6:sEE_WriteStatusRegister	24	static
+../Core/Src/Eeprom.c:253:6:EEPROM_SPI_SendInstruction	16	static

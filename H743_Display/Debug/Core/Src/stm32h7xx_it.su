@@ -1,0 +1,13 @@
+../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_ll_spi.h:2430:25:LL_SPI_ReceiveData8	16	static
+../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_ll_spi.h:2464:22:LL_SPI_TransmitData8	16	static
+../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_ll_tim.h:1521:22:LL_TIM_DisableCounter	16	static
+../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_ll_tim.h:3932:22:LL_TIM_DisableAllOutputs	16	static
+../Core/Src/stm32h7xx_it.c:69:6:NMI_Handler	4	static
+../Core/Src/stm32h7xx_it.c:84:6:HardFault_Handler	4	static
+../Core/Src/stm32h7xx_it.c:99:6:MemManage_Handler	4	static
+../Core/Src/stm32h7xx_it.c:114:6:BusFault_Handler	4	static
+../Core/Src/stm32h7xx_it.c:129:6:UsageFault_Handler	4	static
+../Core/Src/stm32h7xx_it.c:144:6:SVC_Handler	4	static
+../Core/Src/stm32h7xx_it.c:157:6:DebugMon_Handler	4	static
+../Core/Src/stm32h7xx_it.c:170:6:PendSV_Handler	4	static
+../Core/Src/stm32h7xx_it.c:183:6:SysTick_Handler	16	static

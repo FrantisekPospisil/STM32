@@ -1,0 +1,10 @@
+21:32:46 **** Incremental Build of configuration Debug for project DAC_SignalsGeneration ****
+make -j12 all 
+arm-none-eabi-size   STM32746G_DISCOVERY.elf 
+   text	   data	    bss	    dec	    hex	filename
+   7636	     48	   1768	   9452	   24ec	STM32746G_DISCOVERY.elf
+Finished building: default.size.stdout
+ 
+
+21:32:46 Build Finished. 0 errors, 0 warnings. (took 214ms)
+

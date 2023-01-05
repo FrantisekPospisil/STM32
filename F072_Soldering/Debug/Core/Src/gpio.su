@@ -1,0 +1,8 @@
+../Drivers/CMSIS/Include/core_cm0.h:623:22:__NVIC_EnableIRQ	16	static
+../Drivers/CMSIS/Include/core_cm0.h:730:22:__NVIC_SetPriority	24	static
+../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_ll_bus.h:227:22:LL_AHB1_GRP1_EnableClock	24	static
+../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_ll_system.h:626:22:LL_SYSCFG_SetEXTISource	24	static
+../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_ll_gpio.h:268:22:LL_GPIO_SetPinMode	24	static
+../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_ll_gpio.h:474:22:LL_GPIO_SetPinPull	24	static
+../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_ll_gpio.h:868:22:LL_GPIO_ResetOutputPin	16	static
+../Core/Src/gpio.c:42:6:MX_GPIO_Init	48	static
